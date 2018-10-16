@@ -1,0 +1,61 @@
+{
+    "name": "recipe_pictures",
+    "columns": [
+        {
+            "column_name": "id",
+            "type": "bigint",
+            "traits": [
+                "autoincrement",
+                "unsigned"
+            ]
+        },
+        {
+            "column_name": "uri",
+            "type": "string",
+            "modifiers": {
+                "size": 800
+            }
+        },
+        {
+            "column_name": "description",
+            "type": "string",
+            "modifiers": {
+                "size": 1000,
+                "nullable": true
+            }
+        },
+        {
+            "column_name":"created_at",
+            "type": "timestamp"
+        },
+        {
+            "column_name": "modified_at",
+            "type": "timestamp",
+            "modifiers": {
+                "column_arguments": "default current_timestamp on update current_timestamp"
+            }
+        },
+        {
+            "column_name": "recipe_id",
+            "type": "bigint",
+            "traits": [
+                "unsigned"
+            ],
+            "modifiers": {
+                "nullable": true
+            }
+        }
+    ],
+    "constraints": [
+        {
+            "column_name": "recipe_id",
+            "foreign_table": "recipes",
+            "foreign_column": "id",
+            "on_delete": "set null",
+            "on_update": "cascade"
+        }
+    ],
+    "modifiers": {
+        "primary_key": "id"
+    }
+}

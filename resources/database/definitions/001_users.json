@@ -1,0 +1,35 @@
+{
+    "name": "users",
+    "columns": [
+        {
+            "column_name": "id",
+            "type": "bigint",
+            "traits": [
+                "unsigned",
+                "autoincrement"
+            ]
+        },
+        {
+            "column_name": "first_name",
+            "type": "string"
+        },
+        {
+            "column_name": "last_name",
+            "type": "string"
+        },
+        {
+            "column_name": "email",
+            "type": "string"
+        },
+        {
+            "column_name": "password",
+            "type": "string",
+            "modifiers": {
+                "size": 1000
+            }
+        }
+    ],
+    "modifiers": {
+        "primary_key": "id"
+    }
+}

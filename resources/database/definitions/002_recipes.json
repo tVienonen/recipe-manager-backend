@@ -1,0 +1,59 @@
+{
+    "name": "recipes",
+    "columns": [
+        {
+            "column_name": "id",
+            "type": "bigint",
+            "traits": [
+                "autoincrement",
+                "unsigned"
+            ]
+        },
+        {
+            "column_name": "name",
+            "type": "string",
+            "modifiers": {
+                "nullable": true,
+                "indexed_as": "recipe_name"
+            }
+        },
+        {
+            "column_name": "description",
+            "type": "string",
+            "modifiers": {
+                "size": 1000,
+                "nullable": true
+            }
+        },
+        {
+            "column_name":"created_at",
+            "type": "timestamp"
+        },
+        {
+            "column_name": "modified_at",
+            "type": "timestamp",
+            "modifiers": {
+                "column_arguments": ["default current_timestamp on update current_timestamp"]
+            }
+        },
+        {
+            "column_name": "user_id",
+            "type": "bigint",
+            "traits": [
+                "unsigned"
+            ]
+        }
+    ],
+    "constraints": [
+        {
+            "column_name": "user_id",
+            "foreign_table": "users",
+            "foreign_column": "id",
+            "on_delete": "cascade",
+            "on_update": "cascade"
+        }
+    ],
+    "modifiers": {
+        "primary_key": "id"
+    }
+}
