@@ -26,7 +26,11 @@ type AuthPayload struct {
 func New(publicKey *rsa.PublicKey) iris.Handler {
 	return func(ctx iris.Context) {
 		authHeader := ctx.GetHeader("Authorization")
-		decodedAuthHeader, _ := base64.StdEncoding.DecodeString(authHeader)
+		decodedAuthHeader, err := base64.StdEncoding.DecodeString(authHeader)
+		if err != nil {
+			log.Println(err)
+			rejectRequest(ctx)
+		}
 		authHeaderContent := new(AuthHeaderContent)
 		json.Unmarshal(decodedAuthHeader, authHeaderContent)
 
@@ -34,24 +38,27 @@ func New(publicKey *rsa.PublicKey) iris.Handler {
 		hex.Decode(signature, authHeaderContent.S)
 		hashed := sha256.Sum256(authHeaderContent.D)
 
-		err := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed[:], signature)
-		if err != nil {
-			// TODO handle errors
-			ctx.EndRequest()
-			panic("Signature is not valid")
+		if err := rsa.VerifyPKCS1v15(publicKey, crypto.SHA256, hashed[:], signature); err != nil {
+			log.Println(err)
+			log.Println("Signature was invalid")
+			rejectRequest(ctx)
+			return
 		}
 		payload := new(AuthPayload)
 		json.Unmarshal(authHeaderContent.D, payload)
 		if payload.exp == nil {
-			// TODO: Handle
-			ctx.EndRequest()
-			panic("Payload expiration data was missing")
+			log.Println("Token missing expiration data")
+			rejectRequest(ctx)
+			return
 		}
 		if time.Now().After(*payload.exp) {
-			// TODO: Handle
-			ctx.EndRequest()
 			log.Println("Token was expired")
+			rejectRequest(ctx)
 			return
 		}
 	}
+}
+func rejectRequest(ctx iris.Context) {
+	ctx.StatusCode(401)
+	ctx.EndRequest()
 }
